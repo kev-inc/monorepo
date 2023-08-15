@@ -17,60 +17,40 @@ export const UserSchema = `
 
 const URL_API = 'https://dummyjson.com/users'
 
+const fetchAllUsers = async () => {
+
+  try {
+    const response = await fetch(URL_API)
+    const data = await response.json()
+    return data.users
+  } catch (error) {
+    throw new Error("Something went wrong")
+  }
+}
+
+export const fetchSingleUser = async id => {
+  try {
+    const response = await fetch(`${URL_API}/${id}`)
+    const data = await response.json()
+    return data
+  } catch (error) {
+    throw new Error("Something went wrong")
+  }
+}
+
+const searchUsers = async (keyword) => {
+  try {
+    const response = await fetch(`${URL_API}/search?q=${keyword}`)
+    const data = await response.json()
+    return data.users
+  } catch (error) {
+    throw new Error("Something went wrong")
+  }
+}
+
 export const UserResolver = {
-  users: async () => {
-    try {
-      const response = await fetch(URL_API)
-      const data = await response.json()
-
-      return data.users.map(u => {
-        return {
-          id: u.id,
-          firstName: u.firstName,
-          lastName: u.lastName,
-          email: u.email,
-          username: u.username,
-          image: u.image
-        }
-      })
-    } catch (error) {
-      throw new Error("Something went wrong")
-    }
-  },
-  user: async(_, { id }) => {
-    try {
-      const response = await fetch(`${URL_API}/${id}`)
-      const u = await response.json()
-
-      return {
-        id: u.id,
-        firstName: u.firstName,
-        lastName: u.lastName,
-        email: u.email,
-        username: u.username,
-        image: u.image
-      }
-    } catch (error) {
-      throw new Error("Something went wrong")
-    }
-  },
-  searchUser: async (_, { keyword }) => {
-    try {
-      const response = await fetch(`${URL_API}/search?q=${keyword}`)
-      const data = await response.json()
-
-      return data.users.map(u => {
-        return {
-          id: u.id,
-          firstName: u.firstName,
-          lastName: u.lastName,
-          email: u.email,
-          username: u.username,
-          image: u.image
-        }
-      })
-    } catch (error) {
-      throw new Error("Something went wrong")
-    }
+  Query: {
+    users: async () => fetchAllUsers(),
+    searchUser: async (_, { keyword }) => searchUsers(keyword)
   }
 }

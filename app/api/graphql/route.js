@@ -1,10 +1,24 @@
 import { createSchema, createYoga } from 'graphql-yoga'
 import { PostResolver, PostSchema } from './schemas/Posts'
 import { ProductResolver, ProductSchema } from './schemas/Products'
-import { UserResolver, UserSchema } from './schemas/Users'
+import { User, UserResolver, UserSchema } from './schemas/Users'
 
 const combineSchemas = (schemaArr) => {
   return schemaArr.join()
+}
+
+const combineResolvers = (resolverArr) => {
+  let resolvers = {Query: {}}
+  for (const resolver of resolverArr) {
+    resolvers.Query = {
+      ...resolvers.Query, ...resolver.Query
+    }
+    delete resolver.Query
+    resolvers = {
+      ...resolvers, ...resolver
+    }
+  }
+  return resolvers
 }
 
 const { handleRequest } = createYoga({
@@ -14,13 +28,11 @@ const { handleRequest } = createYoga({
       ProductSchema,
       PostSchema
     ]),
-    resolvers: {
-      Query: {
-        ...UserResolver, 
-        ...ProductResolver,
-        ...PostResolver
-      }
-    }
+    resolvers: combineResolvers([
+      UserResolver,
+      PostResolver,
+      ProductResolver
+    ])
   }),
   graphqlEndpoint: '/api/graphql',
   fetchAPI: { Response }

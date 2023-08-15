@@ -1,3 +1,5 @@
+import { fetchSingleUser } from "./Users"
+
 export const PostSchema = `
   type Query {
     posts: [Post]
@@ -8,45 +10,65 @@ export const PostSchema = `
     id: ID
     title: String
     body: String
-    userId: String
+    user: User
   }
 `
 
 const URL_API = 'https://dummyjson.com/posts'
 
-export const PostResolver = {
-  posts: async () => {
-    try {
-      const response = await fetch(URL_API)
-      const data = await response.json()
+const fetchAllPosts = async () => {
+  try {
+    const response = await fetch(URL_API)
+    const data = await response.json()
 
-      return data.posts.map(u => {
-        return {
-          id: u.id,
-          title: u.title,
-          body: u.body,
-          userId: u.userId
-        }
-      })
-    } catch (error) {
-      throw new Error("Something went wrong")
-    }
-  },
-  searchPost: async (_, { keyword }) => {
-    try {
-      const response = await fetch(`${URL_API}/search?q=${keyword}`)
-      const data = await response.json()
-
-      return data.posts.map(u => {
-        return {
-          id: u.id,
-          title: u.title,
-          body: u.body,
-          userId: u.userId
-        }
-      })
-    } catch (error) {
-      throw new Error("Something went wrong")
-    }
+    return data.posts.map(u => {
+      return {
+        id: u.id,
+        title: u.title,
+        body: u.body,
+        user: u.userId
+      }
+    })
+  } catch (error) {
+    throw new Error("Something went wrong")
   }
+}
+
+const fetchSinglePost = async id => {
+  try {
+    const response = await fetch(`${URL_API}/${id}`)
+    const data = await response.json()
+    return data
+  } catch (error) {
+    throw new Error("Something went wrong")
+  }
+}
+
+const searchPosts = async keyword => {
+  try {
+    const response = await fetch(`${URL_API}/search?q=${keyword}`)
+    const data = await response.json()
+
+    return data.posts.map(u => {
+      return {
+        id: u.id,
+        title: u.title,
+        body: u.body,
+        userId: u.userId
+      }
+    })
+  } catch (error) {
+    throw new Error("Something went wrong")
+  }
+}
+
+export const PostResolver = {
+  Query: {
+    posts: () => fetchAllPosts(),
+    searchPost: async (_, { keyword }) => searchPosts(keyword)
+  },
+  Post: {
+    user: async ({user}) => fetchSingleUser(user)
+  }
+  
 }

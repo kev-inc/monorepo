@@ -17,45 +17,29 @@ export const ProductSchema = `
 
 const URL_API = 'https://dummyjson.com/products'
 
+const fetchAllProducts = async () => {
+  try {
+    const response = await fetch(URL_API)
+    const data = await response.json()
+    return data.products
+  } catch (error) {
+    throw new Error("Something went wrong")
+  }
+}
+
+const searchProducts = async keyword => {
+  try {
+    const response = await fetch(`${URL_API}/search?q=${keyword}`)
+    const data = await response.json()
+    return data.products
+  } catch (error) {
+    throw new Error("Something went wrong")
+  }
+}
+
 export const ProductResolver = {
-  products: async () => {
-    try {
-      const response = await fetch(URL_API)
-      const data = await response.json()
-
-      return data.products.map(u => {
-        return {
-          id: u.id,
-          title: u.title,
-          description: u.description,
-          price: u.price,
-          rating: u.rating,
-          category: u.category,
-          thumbnail: u.thumbnail
-        }
-      })
-    } catch (error) {
-      throw new Error("Something went wrong")
-    }
-  },
-  searchProduct: async (_, { keyword }) => {
-    try {
-      const response = await fetch(`${URL_API}/search?q=${keyword}`)
-      const data = await response.json()
-
-      return data.products.map(u => {
-        return {
-          id: u.id,
-          title: u.title,
-          description: u.description,
-          price: u.price,
-          rating: u.rating,
-          category: u.category,
-          thumbnail: u.thumbnail
-        }
-      })
-    } catch (error) {
-      throw new Error("Something went wrong")
-    }
+  Query: {
+    products: async () => fetchAllProducts(),
+    searchProduct: async (_, { keyword }) => searchProducts(keyword)
   }
 }
