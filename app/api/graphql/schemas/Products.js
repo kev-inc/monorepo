@@ -1,11 +1,17 @@
+import DB from "../../../db/database"
+
 export const ProductSchema = `
   type Query {
     products: [Product]
-    searchProduct(keyword:String):[Product]
+    product(_id: ID): Product
+  }
+
+  type Mutation {
+    createProduct(title: String, description: String, price: Float, rating: Float, category: String, thumbnail: String): ID
   }
 
   type Product {
-    id: ID
+    _id: ID
     title: String
     description: String
     price: Float
@@ -15,31 +21,38 @@ export const ProductSchema = `
   }
 `
 
-const URL_API = 'https://dummyjson.com/products'
+const COLLECTION_NAME = 'products'
 
 const fetchAllProducts = async () => {
   try {
-    const response = await fetch(URL_API)
-    const data = await response.json()
-    return data.products
+    return DB.read(COLLECTION_NAME)
   } catch (error) {
     throw new Error("Something went wrong")
   }
 }
 
-const searchProducts = async keyword => {
+const fetchSingleProduct = async id => {
   try {
-    const response = await fetch(`${URL_API}/search?q=${keyword}`)
-    const data = await response.json()
-    return data.products
+    return DB.readOne(COLLECTION_NAME, id)
   } catch (error) {
     throw new Error("Something went wrong")
   }
+}
+
+const createProduct = async product => {
+    try {
+        return DB.create(COLLECTION_NAME, product).then(resp => resp.insertedId)
+    } catch (error) {
+        throw new Error("Something went wrong")
+    }
 }
 
 export const ProductResolver = {
   Query: {
     products: async () => fetchAllProducts(),
-    searchProduct: async (_, { keyword }) => searchProducts(keyword)
+    product: async (_, {_id}) => fetchSingleProduct(_id)
+  },
+  Mutation: {
+    createProduct: async (_, data) => createProduct(data)
   }
 }

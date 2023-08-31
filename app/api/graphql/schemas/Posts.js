@@ -1,74 +1,59 @@
+import DB from "../../../db/database"
 import { fetchSingleUser } from "./Users"
 
 export const PostSchema = `
   type Query {
     posts: [Post]
-    searchPost(keyword:String):[Post]
+    post(_id: ID): Post
+  }
+
+  type Mutation {
+    createPost(title: String, body: String, userId: ID): ID
   }
 
   type Post {
-    id: ID
+    _id: ID
     title: String
     body: String
     user: User
   }
 `
 
-const URL_API = 'https://dummyjson.com/posts'
+const COLLECTION_NAME = 'posts'
 
 const fetchAllPosts = async () => {
   try {
-    const response = await fetch(URL_API)
-    const data = await response.json()
-
-    return data.posts.map(u => {
-      return {
-        id: u.id,
-        title: u.title,
-        body: u.body,
-        user: u.userId
-      }
-    })
+    return DB.read(COLLECTION_NAME)
   } catch (error) {
-    throw new Error("Something went wrong")
+    throw new Error(error)
   }
 }
 
 const fetchSinglePost = async id => {
   try {
-    const response = await fetch(`${URL_API}/${id}`)
-    const data = await response.json()
-    return data
+    return DB.readOne(COLLECTION_NAME, id)
   } catch (error) {
     throw new Error("Something went wrong")
   }
 }
 
-const searchPosts = async keyword => {
-  try {
-    const response = await fetch(`${URL_API}/search?q=${keyword}`)
-    const data = await response.json()
-
-    return data.posts.map(u => {
-      return {
-        id: u.id,
-        title: u.title,
-        body: u.body,
-        userId: u.userId
-      }
-    })
-  } catch (error) {
-    throw new Error("Something went wrong")
-  }
+const createPost = async post => {
+    try {
+        return DB.create(COLLECTION_NAME, post).then(resp => resp.insertedId)
+    } catch (error) {
+        throw new Error("Something went wrong")
+    }
 }
 
 export const PostResolver = {
   Query: {
     posts: () => fetchAllPosts(),
-    searchPost: async (_, { keyword }) => searchPosts(keyword)
+    post: async (_, {_id}) => fetchSinglePost(_id)
+  },
+  Mutation: {
+    createPost: async (_, data) => createPost(data)
   },
   Post: {
-    user: async ({user}) => fetchSingleUser(user)
+    user: async ({userId}) => fetchSingleUser(userId) // to convert userId to user
   }
-  
 }

@@ -1,15 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  
-  webpack: (config, options) => {
-    config.module.rules.push({
-      test: /\.(graphql|gql)/,
-      exclude: /node_modules/,
-      loader: "graphql-tag/loader"
-    })
+    experimental: {
+        appDir: true,
+        serverComponentsExternalPackages: ["mongoose"],
+    },
+    webpack: (config, options) => {
+        config.module.rules.push({
+            test: /\.(graphql|gql)/,
+            exclude: /node_modules/,
+            loader: "graphql-tag/loader"
+        })
 
-    return config
-  }
+        return config
+    }
 }
 
 module.exports = nextConfig
