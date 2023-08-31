@@ -18,7 +18,7 @@ export default function Home() {
   const renderUsers = () => {
     if (loading) return 'Loading...'
     return <div>
-      {data.users.map((user, index) => (
+      {data.map((user, index) => (
         <div key={index}>
           <h3>{user.firstName} {user.lastName}</h3>
           <h5>{user.email}</h5>
