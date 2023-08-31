@@ -1,10 +1,9 @@
 query getUsers {
  users {
-  id
+  _id
   firstName
   lastName
   email
   username
-  image
  }
 }
