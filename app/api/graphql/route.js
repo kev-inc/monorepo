@@ -1,41 +1,54 @@
 import { createSchema, createYoga } from 'graphql-yoga'
 import { PostResolver, PostSchema } from './schemas/Posts'
 import { ProductResolver, ProductSchema } from './schemas/Products'
-import { User, UserResolver, UserSchema } from './schemas/Users'
+import { UserResolver, UserSchema } from './schemas/Users'
+import { LinkSchema, LinkResolver } from './schemas/Links'
+import { PageSchema, PageResolver } from './schemas/Pages'
 
 const combineSchemas = (schemaArr) => {
-  return schemaArr.join()
+    return schemaArr.join()
 }
 
 const combineResolvers = (resolverArr) => {
-  let resolvers = {Query: {}}
-  for (const resolver of resolverArr) {
-    resolvers.Query = {
-      ...resolvers.Query, ...resolver.Query
+    let resolvers = { Query: {}, Mutation: {} }
+    for (const resolver of resolverArr) {
+        // Append resolver query
+        resolvers.Query = {
+            ...resolvers.Query, ...resolver.Query
+        }
+        // Append resolver mutation
+        resolvers.Mutation = {
+            ...resolvers.Mutation, ...resolver.Mutation
+        }
+        delete resolver.Query
+        delete resolver.Mutation
+        // Append remaining types
+        resolvers = {
+            ...resolvers, ...resolver
+        }
     }
-    delete resolver.Query
-    resolvers = {
-      ...resolvers, ...resolver
-    }
-  }
-  return resolvers
+    return resolvers
 }
 
 const { handleRequest } = createYoga({
-  schema: createSchema({
-    typeDefs: combineSchemas([
-      UserSchema, 
-      ProductSchema,
-      PostSchema
-    ]),
-    resolvers: combineResolvers([
-      UserResolver,
-      PostResolver,
-      ProductResolver
-    ])
-  }),
-  graphqlEndpoint: '/api/graphql',
-  fetchAPI: { Response }
+    schema: createSchema({
+        typeDefs: combineSchemas([
+            LinkSchema,
+            PageSchema,
+            ProductSchema,
+            PostSchema,
+            UserSchema
+        ]),
+        resolvers: combineResolvers([
+            LinkResolver,
+            PageResolver,
+            PostResolver,
+            ProductResolver,
+            UserResolver,
+        ])
+    }),
+    graphqlEndpoint: '/api/graphql',
+    fetchAPI: { Response }
 })
- 
+
 export { handleRequest as GET, handleRequest as POST }

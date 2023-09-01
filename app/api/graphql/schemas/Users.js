@@ -1,13 +1,22 @@
-import DB from "../../../db/database"
+import CRUD from "../utils/crud"
 
 export const UserSchema = `
+  input UserInput {
+    firstName: String
+    lastName: String
+    email: String
+    username: String
+    image: String
+  }
   type Query {
     users: [User]
     user(_id: ID): User
   }
 
   type Mutation {
-    createUser(firstName: String, lastName: String, email: String, username: String, image: String): ID
+    createUser(input: UserInput): ID
+    updateUser(_id: ID, input: PageInput): Boolean
+    deleteUser(_id: ID): Boolean
   }
 
   type User {
@@ -22,36 +31,14 @@ export const UserSchema = `
 
 const COLLECTION_NAME = 'users'
 
-const fetchAllUsers = async () => {
-  try {
-    return DB.read(COLLECTION_NAME)
-  } catch (error) {
-    throw new Error("Something went wrong")
-  }
-}
-
-export const fetchSingleUser = async id => {
-  try {
-    return DB.readOne(COLLECTION_NAME, id)
-  } catch (error) {
-    throw new Error("Something went wrong")
-  }
-}
-
-const createUser = async user => {
-    try {
-        return DB.create(COLLECTION_NAME, post).then(resp => resp.insertedId)
-    } catch (error) {
-        throw new Error("Something went wrong")
-    }
-}
-
 export const UserResolver = {
   Query: {
-    users: async () => fetchAllUsers(),
-    user: async (_, {_id}) => fetchSingleUser(_id)
+    users: async () => CRUD.fetchAll(COLLECTION_NAME),
+    user: async (_, {_id}) => CRUD.fetchOne(COLLECTION_NAME, _id)
   },
   Mutation: {
-    createUser: async (_, data) => createUser(data)
+    createUser: async (_, {input}) => CRUD.create(COLLECTION_NAME, input),
+    updateUser: async (_, {_id, input}) => CRUD.updateOne(COLLECTION_NAME, _id, input),
+    deleteUser: async (_, {_id}) => CRUD.deleteOne(COLLECTION_NAME, _id)
   }
 }

@@ -1,14 +1,21 @@
-import DB from "../../../db/database"
-import { fetchSingleUser } from "./Users"
+import CRUD from "../utils/crud"
 
 export const PostSchema = `
+  input PostInput {
+    title: String
+    body: String
+    userId: ID
+  }
+
   type Query {
     posts: [Post]
     post(_id: ID): Post
   }
 
   type Mutation {
-    createPost(title: String, body: String, userId: ID): ID
+    createPost(input: PostInput): ID
+    updatePost(_id: ID, input: PostInput): Boolean
+    deletePost(_id: ID): Boolean
   }
 
   type Post {
@@ -21,39 +28,17 @@ export const PostSchema = `
 
 const COLLECTION_NAME = 'posts'
 
-const fetchAllPosts = async () => {
-  try {
-    return DB.read(COLLECTION_NAME)
-  } catch (error) {
-    throw new Error(error)
-  }
-}
-
-const fetchSinglePost = async id => {
-  try {
-    return DB.readOne(COLLECTION_NAME, id)
-  } catch (error) {
-    throw new Error("Something went wrong")
-  }
-}
-
-const createPost = async post => {
-    try {
-        return DB.create(COLLECTION_NAME, post).then(resp => resp.insertedId)
-    } catch (error) {
-        throw new Error("Something went wrong")
-    }
-}
-
 export const PostResolver = {
   Query: {
-    posts: () => fetchAllPosts(),
-    post: async (_, {_id}) => fetchSinglePost(_id)
+    posts: () => CRUD.fetchAll(COLLECTION_NAME),
+    post: async (_, {_id}) => CRUD.fetchOne(COLLECTION_NAME, _id)
   },
   Mutation: {
-    createPost: async (_, data) => createPost(data)
+    createPost: async (_, {input}) => CRUD.create(COLLECTION_NAME, input),
+    updatePost: async (_, {_id, input}) => CRUD.updateOne(COLLECTION_NAME, _id, input),
+    deletePost: async (_, {_id}) => CRUD.deleteOne(COLLECTION_NAME, _id)
   },
   Post: {
-    user: async ({userId}) => fetchSingleUser(userId) // to convert userId to user
+    user: async ({userId}) => CRUD.fetchOne("users", userId) // to convert userId to user
   }
 }

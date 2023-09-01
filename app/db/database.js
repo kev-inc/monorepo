@@ -45,6 +45,16 @@ const readOne = async (collection, id) => {
     })
 }
 
+const updateOne = async (collection, id, objToUpdate) => {
+    const db = await dbPromise
+    return db.collection(collection).updateOne({_id: new ObjectId(id)}, {$set: objToUpdate})
+}
+
+const deleteOne = async (collection, id) => {
+    const db = await dbPromise
+    return db.collection(collection).deleteOne({_id: new ObjectId(id)})
+}
+
 // Export a module-scoped MongoClient promise. By doing this in a
 // separate module, the client can be shared across functions.
 // export default dbPromise
@@ -52,7 +62,9 @@ const readOne = async (collection, id) => {
 const DB = {
     create,
     read,
-    readOne
+    readOne,
+    updateOne,
+    deleteOne,
 }
 
 export default DB
