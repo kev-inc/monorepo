@@ -15,7 +15,7 @@ export const UserSchema = `
 
   type Mutation {
     createUser(input: UserInput): ID
-    updateUser(_id: ID, input: PageInput): Boolean
+    updateUser(_id: ID, input: UserInput): Boolean
     deleteUser(_id: ID): Boolean
   }
 
