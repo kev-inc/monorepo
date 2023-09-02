@@ -1,6 +1,7 @@
 import { createSchema, createYoga } from 'graphql-yoga'
 import { LinkSchema, LinkResolver } from './schemas/Links'
 import { PageSchema, PageResolver } from './schemas/Pages'
+import { PasteSchema, PasteResolver } from './schemas/Pastes'
 
 const combineSchemas = (schemaArr) => {
     return schemaArr.join()
@@ -32,10 +33,12 @@ const { handleRequest } = createYoga({
         typeDefs: combineSchemas([
             LinkSchema,
             PageSchema,
+            PasteSchema,
         ]),
         resolvers: combineResolvers([
             LinkResolver,
             PageResolver,
+            PasteResolver,
         ])
     }),
     graphqlEndpoint: '/api/graphql',

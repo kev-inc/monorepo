@@ -39,6 +39,5 @@ export const LinkResolver = {
     createLink: async (_, {input}) => CRUD.createOne(COLLECTION_NAME, input),
     updateLink: async (_, {_id, input}) => CRUD.updateOne(COLLECTION_NAME, _id, input),
     deleteLink: async (_, {_id}) => CRUD.deleteOne(COLLECTION_NAME, _id)
-
   }
 }
