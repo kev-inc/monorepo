@@ -45,6 +45,15 @@ const readOne = async (collection, id) => {
     })
 }
 
+const readOneById = async (collection, id) => {
+    return readOneByFilter(collection, {_id: new ObjectId(id)})
+}
+
+const readOneByFilter = async (collection, filter) => {
+    const db = await dbPromise
+    return db.collection(collection).findOne(filter)
+}
+
 const updateOne = async (collection, id, objToUpdate) => {
     const db = await dbPromise
     return db.collection(collection).updateOne({_id: new ObjectId(id)}, {$set: objToUpdate})
@@ -63,6 +72,8 @@ const DB = {
     create,
     read,
     readOne,
+    readOneById,
+    readOneByFilter,
     updateOne,
     deleteOne,
 }

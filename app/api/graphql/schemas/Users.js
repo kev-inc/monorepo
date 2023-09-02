@@ -34,7 +34,7 @@ const COLLECTION_NAME = 'users'
 export const UserResolver = {
   Query: {
     users: async () => CRUD.fetchAll(COLLECTION_NAME),
-    user: async (_, {_id}) => CRUD.fetchOne(COLLECTION_NAME, _id)
+    user: async (_, {_id}) => CRUD.fetchOneById(COLLECTION_NAME, _id)
   },
   Mutation: {
     createUser: async (_, {input}) => CRUD.create(COLLECTION_NAME, input),

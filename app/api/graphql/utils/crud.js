@@ -8,9 +8,16 @@ const CRUD = {
             throw new Error(error)
         }
     },
-    fetchOne: async (collection, id) => {
+    fetchOneById: async (collection, id) => {
         try {
-            return DB.readOne(collection, id)
+            return DB.readOneById(collection, id)
+        } catch (error) {
+            throw new Error(error)
+        }
+    },
+    fetchOneByFilter: async (collection, filter) => {
+        try {
+            return DB.readOneByFilter(collection, filter)
         } catch (error) {
             throw new Error(error)
         }

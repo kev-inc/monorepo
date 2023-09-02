@@ -8,7 +8,8 @@ export const LinkSchema = `
 
   type Query {
     links: [Link]
-    link(_id: ID): Link 
+    link(_id: ID): Link
+    fetchUrlFromAlias(alias: String): String
   }
 
   type Mutation {
@@ -29,7 +30,10 @@ const COLLECTION_NAME = "links"
 export const LinkResolver = {
   Query: {
     links: async () => CRUD.fetchAll(COLLECTION_NAME),
-    link: async (_, {_id}) => CRUD.fetchOne(COLLECTION_NAME, _id)
+    link: async (_, {_id}) => CRUD.fetchOneById(COLLECTION_NAME, _id),
+    fetchUrlFromAlias: async (_, {alias}) => CRUD.fetchOneByFilter(COLLECTION_NAME, {alias})
+        .then(link => link['url'])
+        .catch(() => null)
   },
   Mutation: {
     createLink: async (_, {input}) => CRUD.createOne(COLLECTION_NAME, input),

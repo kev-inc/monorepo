@@ -31,7 +31,7 @@ const COLLECTION_NAME = 'posts'
 export const PostResolver = {
   Query: {
     posts: () => CRUD.fetchAll(COLLECTION_NAME),
-    post: async (_, {_id}) => CRUD.fetchOne(COLLECTION_NAME, _id)
+    post: async (_, {_id}) => CRUD.fetchOneById(COLLECTION_NAME, _id)
   },
   Mutation: {
     createPost: async (_, {input}) => CRUD.create(COLLECTION_NAME, input),

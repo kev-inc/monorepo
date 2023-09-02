@@ -37,7 +37,7 @@ const COLLECTION_NAME = 'products'
 export const ProductResolver = {
   Query: {
     products: async () => CRUD.fetchAll(COLLECTION_NAME),
-    product: async (_, {_id}) => CRUD.fetchOne(COLLECTION_NAME, _id)
+    product: async (_, {_id}) => CRUD.fetchOneById(COLLECTION_NAME, _id)
   },
   Mutation: {
     createProduct: async (_, {input}) => CRUD.create(COLLECTION_NAME, input),

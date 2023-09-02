@@ -29,7 +29,7 @@ const COLLECTION_NAME = 'pages'
 export const PageResolver = {
   Query: {
     pages: async () => CRUD.fetchAll(COLLECTION_NAME),
-    page: async (_, {_id}) => CRUD.fetchOne(COLLECTION_NAME, _id)
+    page: async (_, {_id}) => CRUD.fetchOneById(COLLECTION_NAME, _id)
   },
   Mutation: {
     createPage: async (_, {input}) => CRUD.createOne(COLLECTION_NAME, input),
