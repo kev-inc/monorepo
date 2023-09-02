@@ -36,7 +36,7 @@ const LinksPage = () => {
         return <div>Checking link...</div>
     } else {
         if (resp['success']) {
-            return <div>Navigating to '{resp['url']}'</div> 
+            return <div>Navigating to &apos;{resp['url']}&apos;</div> 
         } else {
             return <div>Invalid alias</div>
         }
