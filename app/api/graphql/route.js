@@ -1,7 +1,4 @@
 import { createSchema, createYoga } from 'graphql-yoga'
-import { PostResolver, PostSchema } from './schemas/Posts'
-import { ProductResolver, ProductSchema } from './schemas/Products'
-import { UserResolver, UserSchema } from './schemas/Users'
 import { LinkSchema, LinkResolver } from './schemas/Links'
 import { PageSchema, PageResolver } from './schemas/Pages'
 
@@ -35,16 +32,10 @@ const { handleRequest } = createYoga({
         typeDefs: combineSchemas([
             LinkSchema,
             PageSchema,
-            ProductSchema,
-            PostSchema,
-            UserSchema
         ]),
         resolvers: combineResolvers([
             LinkResolver,
             PageResolver,
-            PostResolver,
-            ProductResolver,
-            UserResolver,
         ])
     }),
     graphqlEndpoint: '/api/graphql',
