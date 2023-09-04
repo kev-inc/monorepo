@@ -9,7 +9,7 @@ export const PasteSchema = `
   type Query {
     pastes: [Paste]
     paste(_id: ID): Paste
-    fetchPasteByIdOrAlias(query: String): Paste
+    fetchByAlias(alias: String): Paste
   }
 
   type Mutation {
@@ -31,13 +31,8 @@ export const PasteResolver = {
   Query: {
     pastes: async () => CRUD.fetchAll(COLLECTION_NAME),
     paste: async (_, {_id}) => CRUD.fetchOneById(COLLECTION_NAME, _id),
-    fetchPasteByIdOrAlias: async (_, {query}) => {
-        let paste = await CRUD.fetchOneById(COLLECTION_NAME, query)
-        if (paste != null) {
-            return paste
-        }
-        paste = await CRUD.fetchOneByFilter(COLLECTION_NAME, {alias: query})
-        return paste
+    fetchByAlias: async (_, {alias}) => {
+        return CRUD.fetchOneByFilter(COLLECTION_NAME, {alias: alias})
     }
   },
   Mutation: {
