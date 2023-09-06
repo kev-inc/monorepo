@@ -1,46 +1,57 @@
 'use client'
 
-import { useQuery, gql } from "@apollo/client"
+import { useQuery, gql, useMutation } from "@apollo/client"
 import { useEffect, useState } from "react"
 import { useSearchParams } from 'next/navigation'
 
-const LinksPage = () => {
-    
-    const searchParams = useSearchParams()
-    const alias = searchParams.get('alias')
-    const {data, loading, error} = useQuery(gql`
-        query GetLink {
-            fetchUrlFromAlias(alias: "${alias}")
-        }
-    `)
+const CREATE_LINK = gql`
+    mutation CreateLink($alias: String!, $url: String!) {
+        createLink(input: {alias: $alias, url: $url})
+    }
+`
 
-    const [resp, setResp] = useState({
-        url: null,
-        success: false
+const NewLinkPage = () => {
+
+    const [createLink, {data, loading, error}] = useMutation(CREATE_LINK)
+
+    const [payload, setPayload] = useState({
+        alias: "",
+        url: ""
     })
 
-    useEffect(() => {
-        if (data) {
-            setResp({
-                url: data['fetchUrlFromAlias'],
-                success: data['fetchUrlFromAlias'] != null
-            })
+    const submitLink = () => {
+        if (payload['alias'] == "" || payload['url'] == "") {
+            alert("Please provide an alias and url.")
+            return
         }
-    }, [data])
-
-    useEffect(() => {
-        if (resp['url']) window.location.href = resp['url']
-    }, [resp])
-
-    if (loading) {
-        return <div>Checking link...</div>
-    } else {
-        if (resp['success']) {
-            return <div>Navigating to &apos;{resp['url']}&apos;</div> 
-        } else {
-            return <div>Invalid alias</div>
-        }
+        createLink({variables: payload})
     }
+
+    return (
+        <div>
+            <h1>Links</h1>
+
+            <div>
+                <label>Alias</label><br/>
+                <input type="text" value={payload.alias} onChange={e => setPayload({...payload, alias: e.target.value})}/>
+            </div>
+
+            <div>
+                <label>URL</label><br/>
+                <input type="text" value={payload.url} onChange={e => setPayload({...payload, url: e.target.value})}/>
+            </div>
+
+            <div>
+                <button onClick={submitLink}>Create Link</button>
+            </div>
+
+            {loading && <div>Creating ...</div>}
+            {data && (
+                data['createLink'] ? <div>The link /link/{payload['alias']} has been created!</div> : <div>The alias is not available, please try another.</div>
+            )}
+
+        </div>
+    )
 }
 
-export default LinksPage
+export default NewLinkPage

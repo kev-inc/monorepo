@@ -36,8 +36,18 @@ export const LinkResolver = {
         .catch(() => null)
   },
   Mutation: {
-    createLink: async (_, {input}) => CRUD.createOne(COLLECTION_NAME, input),
-    updateLink: async (_, {_id, input}) => CRUD.updateOne(COLLECTION_NAME, _id, input),
+    createLink: async (_, {input}) => {
+        if (await CRUD.fetchOneByFilter(COLLECTION_NAME, {alias: input['alias']})) {
+            return null
+        }
+        return CRUD.createOne(COLLECTION_NAME, input)
+    },
+    updateLink: async (_, {_id, input}) => {
+        if (input['alias'] && await CRUD.fetchOneByFilter(COLLECTION_NAME, {alias: input['alias']})) {
+            return null
+        }
+        return CRUD.updateOne(COLLECTION_NAME, _id, input)
+    },
     deleteLink: async (_, {_id}) => CRUD.deleteOne(COLLECTION_NAME, _id)
   }
 }
